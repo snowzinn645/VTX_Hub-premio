@@ -2089,12 +2089,12 @@ box:AddButton("Apply Method", function()
                 if (Sets.HRP.Position - HRP.Position).Magnitude > 30 then
                     local pos = HRP.CFrame
                     HRP.CFrame = Sets.HRP.CFrame
-                    repeat task.wait()
+                    repeat task.wait(0.5)
                         CG:FireServer(Blob.RightDetector, Sets.HRP, Blob.RightDetector.RightWeld)
                         CR:FireServer(Blob.RightDetector.RightWeld)
                     until isnetworkowner(Sets.HRP)
                     HRP.CFrame = pos
-                    task.wait()
+                    task.wait(0.5)
                     if isnetworkowner(Sets.HRP) then
                         Sets.HRP.CFrame = Blob.RightDetector.CFrame
                     end
