@@ -368,7 +368,7 @@ local function AddESP(plr)
             txt.Size = UDim2.new(0.5, 0, 0.5, 0)
             txt.BackgroundTransparency = 1
             txt.Text = plr.Name
-            txt.TextColor3 = Color3.fromRGB(255,0,255)
+            txt.TextColor3 = Color3.fromRGB(255,255,255)
             txt.TextStrokeTransparency = 0
             txt.TextScaled = true
             txt.Font = Enum.Font.SourceSansBold
@@ -410,7 +410,6 @@ box:AddToggle("PlayerESP", {
         end
     end
 })
-
 end
 
 do
@@ -1862,7 +1861,7 @@ local RunService = game:GetService("RunService")
 local ShiftLock = false
 
 box:AddToggle("ShiftLock", {
-    Text = "Shift Lock (recomended) ",
+    Text = "Shift Lock (recommended) ",
     Default = false,
     Callback = function(v)
         ShiftLock = v
