@@ -2487,7 +2487,7 @@ box:AddButton("Try to Remove Gucci", function()
     local Seat = Seats[Sets.Name]
     if Seat and hum then
         Seat:Sit(hum)
-        task.wait(0.2)
+        task.wait(0.05)
         stvel(HRP)
         HRP.CFrame = pos
     end
@@ -2669,9 +2669,9 @@ box:AddToggle("LineLag", {
 
 box:AddSlider("Packets", {
     Text = "Packet Strength",
-    Default = 3000,
+    Default = 18000,
     Min = 3000,
-    Max = 600000,
+    Max = 800000,
     Rounding = 0,
     Callback = function(v)
         Packets = v
@@ -2694,7 +2694,7 @@ box:AddToggle("PacketLag", {
         PacketsEnabled = v
         if v then
             task.spawn(function()
-                while PacketsEnabled and task.wait(0.3) do
+                while PacketsEnabled and task.wait(0.05) do
                     if AntiDetect then
                         game:GetService("ReplicatedStorage").GrabEvents.CreateGrabLine:FireServer(string.rep("VTX_Hub is crazyyyyyyyy", Packets))
                     else
