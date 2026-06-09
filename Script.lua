@@ -758,7 +758,7 @@ box:AddToggle("AntiInput", {
         if antiinputlag then
             local burger = inv:FindFirstChild("FoodCoconut") or spawntoy("FoodCoconut", HRP.CFrame)
             burger.Name = "burger"
-            task.wait(0.2)
+            task.wait(0.07)
             spawn(function()
                 while antiinputlag and task.wait() do
                     task.spawn(function()
@@ -821,7 +821,7 @@ box:AddToggle("GucciTractor", {
                     end
                 end)
                 spawn(function()
-                    task.wait(1)
+                    task.wait(0.2)
                     local mess = pal.ViewItemButton.NewMessage:Clone()
                     mess.Name = "Gucci2"
                     mess.TextColor3 = Color3.fromRGB(255, 255, 255)
@@ -872,9 +872,9 @@ box:AddToggle("GucciTrain", {
                     task.wait()
                 end
             end)
-            task.wait(0.2)
+            task.wait(0.1)
             plr.Character.Humanoid:ChangeState(Enum.HumanoidStateType.Jumping)
-            task.wait(0.2)
+            task.wait(0.1)
             HRP.CFrame = pos
         else
             for i = 1, 30 do
@@ -962,7 +962,7 @@ box:AddToggle("AutoGucciBlob", {
                         end
                     end)
                     spawn(function()
-                        task.wait(1)
+                        task.wait(0.2)
                         local mess = pal.ViewItemButton.NewMessage:Clone()
                         mess.Name = "Gucci1"
                         mess.TextColor3 = Color3.fromRGB(255, 255, 255)
@@ -1290,7 +1290,7 @@ box:AddToggle("AutoAntiLag", {
         if v then
             task.spawn(function()
                 while autoantilag and task.wait() do
-                    if Lines > 100 then
+                    if Lines > 1000 then
                         plr.PlayerScripts.CharacterAndBeamMove.Enabled = false
                         Library:Notify({
                             Title = "Auto Anti Lag Notify",
@@ -2456,7 +2456,7 @@ box:AddButton("Try to Remove Gucci", function()
     local Seat = Seats[Sets.Name]
     if Seat and hum then
         Seat:Sit(hum)
-        task.wait(0.3)
+        task.wait(0.2)
         stvel(HRP)
         HRP.CFrame = pos
     end
@@ -2508,7 +2508,7 @@ box:AddSlider("Offset", {
 })
 box:AddSlider("Offset", {
     Text = "Y",
-    Default = 14,
+    Default = 13,5,
     Min = -20,
     Max = 20,
     Rounding = 1,
@@ -2639,7 +2639,7 @@ box:AddToggle("LineLag", {
 box:AddSlider("Packets", {
     Text = "Packet Strength",
     Default = 3000,
-    Min = 100,
+    Min = 3000,
     Max = 600000,
     Rounding = 0,
     Callback = function(v)
@@ -2663,11 +2663,11 @@ box:AddToggle("PacketLag", {
         PacketsEnabled = v
         if v then
             task.spawn(function()
-                while PacketsEnabled and task.wait(0.5) do
+                while PacketsEnabled and task.wait(0.3) do
                     if AntiDetect then
-                        game:GetService("ReplicatedStorage").GrabEvents.CreateGrabLine:FireServer(string.rep("sosoososososossosoososososos", Packets))
+                        game:GetService("ReplicatedStorage").GrabEvents.CreateGrabLine:FireServer(string.rep("VTX_Hub is crazyyyyyyyy", Packets))
                     else
-                        game:GetService("ReplicatedStorage").GrabEvents.ExtendGrabLine:FireServer(string.rep("sosoososososossosoososososos", Packets))
+                        game:GetService("ReplicatedStorage").GrabEvents.ExtendGrabLine:FireServer(string.rep("VTX_Hub is crazyyyyyyyy", Packets))
                     end
                 end
             end)
