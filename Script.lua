@@ -436,13 +436,12 @@ box:AddToggle("AntiGrab",{
         end
     end
 })
--- ==================== RTX SHADERS (Desativado por Padrão) ====================
+-- ==================== MELHORES SHADERS 2026 (VTX_Hub) ====================
 do
-    local box = Tabs.Visual:AddRightGroupbox("RTX Shaders", "sparkles")
+    local box = Tabs.Visual:AddRightGroupbox("Best Shaders 2026", "sparkles")
 
     local Lighting = game:GetService("Lighting")
     
-    -- Salva configurações originais
     local original = {
         Brightness = Lighting.Brightness,
         Ambient = Lighting.Ambient,
@@ -453,105 +452,287 @@ do
         FogStart = Lighting.FogStart,
     }
 
-    local bloom, color, atmosphere, dof = nil, nil, nil, nil
+    local effects = {}
+    local currentShader = nil
 
-    -- Função para criar os efeitos
-    local function CreateRTXEffects()
-        bloom = Lighting:FindFirstChild("VTX_RTX_Bloom") or Instance.new("BloomEffect")
-        color = Lighting:FindFirstChild("VTX_RTX_Color") or Instance.new("ColorCorrectionEffect")
-        atmosphere = Lighting:FindFirstChild("VTX_RTX_Atmosphere") or Instance.new("Atmosphere")
-        dof = Lighting:FindFirstChild("VTX_RTX_DOF") or Instance.new("DepthOfFieldEffect")
+    local function CreateEffects()
+        effects.Bloom = Lighting:FindFirstChild("VTX_Bloom") or Instance.new("BloomEffect")
+        effects.Color = Lighting:FindFirstChild("VTX_Color") or Instance.new("ColorCorrectionEffect")
+        effects.Atmosphere = Lighting:FindFirstChild("VTX_Atmosphere") or Instance.new("Atmosphere")
+        effects.DOF = Lighting:FindFirstChild("VTX_DOF") or Instance.new("DepthOfFieldEffect")
+        effects.SunRays = Lighting:FindFirstChild("VTX_SunRays") or Instance.new("SunRaysEffect")
 
-        bloom.Name = "VTX_RTX_Bloom"
-        color.Name = "VTX_RTX_Color"
-        atmosphere.Name = "VTX_RTX_Atmosphere"
-        dof.Name = "VTX_RTX_DOF"
-
-        bloom.Parent = Lighting
-        color.Parent = Lighting
-        atmosphere.Parent = Lighting
-        dof.Parent = Lighting
-    end
-
-    -- Função para remover completamente os efeitos
-    local function DestroyRTXEffects()
-        if bloom then bloom:Destroy() end
-        if color then color:Destroy() end
-        if atmosphere then atmosphere:Destroy() end
-        if dof then dof:Destroy() end
-        
-        bloom, color, atmosphere, dof = nil, nil, nil, nil
-    end
-
-    -- Garante que começa tudo desligado
-    DestroyRTXEffects()
-
-    box:AddToggle("RTXShaders", {
-        Text = "RTX Shaders",
-        Default = false,
-        Callback = function(v)
-            if v then
-                -- ATIVAR RTX
-                CreateRTXEffects()   -- Recria se foi destruído
-
-                Lighting.Brightness = 3
-                Lighting.Ambient = Color3.fromRGB(95, 100, 115)
-                Lighting.OutdoorAmbient = Color3.fromRGB(105, 115, 135)
-                Lighting.ClockTime = 14.8
-                Lighting.GlobalShadows = true
-                Lighting.FogStart = 99999
-                Lighting.FogEnd = 99999
-
-                bloom.Intensity = 1.65
-                bloom.Size = 24
-                bloom.Threshold = 0.95
-
-                color.Brightness = 0.06
-                color.Contrast = 0.1
-                color.Saturation = 0.8
-                color.TintColor = Color3.fromRGB(205, 225, 255)
-
-                atmosphere.Density = 0.28
-                atmosphere.Offset = 0.25
-                atmosphere.Color = Color3.fromRGB(140, 170, 255)
-                atmosphere.Decay = Color3.fromRGB(95, 125, 210)
-                atmosphere.Glare = 0.35
-                atmosphere.Haze = 1.4
-
-                dof.FocusDistance = 180
-                dof.InFocusRadius = 140
-                dof.NearIntensity = 0.05
-                dof.FarIntensity = 0.08
-
-                Library:Notify("RTX Shaders Ativado 🔥", 4)
-            else
-                -- DESATIVAR RTX (volta ao normal + remove completamente)
-                Lighting.Brightness = original.Brightness
-                Lighting.Ambient = original.Ambient
-                Lighting.OutdoorAmbient = original.OutdoorAmbient
-                Lighting.ClockTime = original.ClockTime
-                Lighting.GlobalShadows = original.GlobalShadows
-                Lighting.FogStart = original.FogStart
-                Lighting.FogEnd = original.FogEnd
-
-                DestroyRTXEffects()
-
-                Library:Notify("RTX Shaders Desativado e Removido", 3)
-            end
+        for _, eff in pairs(effects) do
+            eff.Name = "VTX_" .. eff.ClassName
+            eff.Parent = Lighting
         end
+    end
+
+    local function DestroyAll()
+        for _, eff in pairs(effects) do
+            if eff and eff.Parent then eff:Destroy() end
+        end
+        effects = {}
+
+        Lighting.Brightness = original.Brightness
+        Lighting.Ambient = original.Ambient
+        Lighting.OutdoorAmbient = original.OutdoorAmbient
+        Lighting.ClockTime = original.ClockTime
+        Lighting.GlobalShadows = original.GlobalShadows
+        Lighting.FogEnd = original.FogEnd
+        Lighting.FogStart = original.FogStart
+
+        currentShader = nil
+    end
+
+    DestroyAll()
+
+    -- ==================== PRESETS PREMIUM ====================
+
+    local presets = {}
+
+    presets.UltraRTX = function()
+        CreateEffects()
+        Lighting.Brightness = 2.85
+        Lighting.ClockTime = 14.8
+        Lighting.GlobalShadows = true
+        Lighting.Ambient = Color3.fromRGB(95, 105, 125)
+        Lighting.OutdoorAmbient = Color3.fromRGB(115, 125, 145)
+
+        effects.Bloom.Intensity = 1.95
+        effects.Bloom.Size = 28
+        effects.Bloom.Threshold = 0.78
+
+        effects.Color.Brightness = 0.09
+        effects.Color.Contrast = 0.18
+        effects.Color.Saturation = 0.92
+        effects.Color.TintColor = Color3.fromRGB(225, 240, 255)
+
+        effects.Atmosphere.Density = 0.23
+        effects.Atmosphere.Offset = 0.25
+        effects.Atmosphere.Color = Color3.fromRGB(160, 190, 255)
+        effects.Atmosphere.Decay = Color3.fromRGB(110, 140, 235)
+        effects.Atmosphere.Glare = 0.45
+        effects.Atmosphere.Haze = 1.15
+
+        effects.DOF.FocusDistance = 180
+        effects.DOF.InFocusRadius = 140
+        effects.DOF.NearIntensity = 0.02
+        effects.DOF.FarIntensity = 0.06
+
+        effects.SunRays.Intensity = 0.28
+        effects.SunRays.Spread = 0.95
+    end
+
+    presets.CinematicRealistic = function()
+        CreateEffects()
+        Lighting.ClockTime = 15.5
+        Lighting.Brightness = 3.4
+
+        effects.Bloom.Intensity = 1.55
+        effects.Bloom.Size = 24
+        effects.Bloom.Threshold = 0.82
+
+        effects.Color.Brightness = 0.06
+        effects.Color.Contrast = 0.28
+        effects.Color.Saturation = 0.88
+        effects.Color.TintColor = Color3.fromRGB(255, 245, 235)
+
+        effects.Atmosphere.Density = 0.19
+        effects.Atmosphere.Haze = 0.75
+        effects.Atmosphere.Glare = 0.3
+    end
+
+    presets.EtherealDream = function()
+        CreateEffects()
+        Lighting.ClockTime = 13.2
+        Lighting.Brightness = 2.9        -- Reduzido
+        Lighting.Ambient = Color3.fromRGB(130, 145, 170)
+
+        effects.Bloom.Intensity = 1.75   -- Reduzido
+        effects.Bloom.Size = 26
+        effects.Bloom.Threshold = 0.72
+
+        effects.Color.Brightness = 0.08
+        effects.Color.Contrast = 0.15
+        effects.Color.Saturation = 1.25
+        effects.Color.TintColor = Color3.fromRGB(225, 235, 255)
+
+        effects.Atmosphere.Density = 0.26
+        effects.Atmosphere.Offset = 0.3
+        effects.Atmosphere.Color = Color3.fromRGB(195, 215, 255)
+        effects.Atmosphere.Decay = Color3.fromRGB(170, 200, 255)
+        effects.Atmosphere.Glare = 0.4     -- Reduzido
+        effects.Atmosphere.Haze = 1.25
+
+        effects.SunRays.Intensity = 0.22   -- Reduzido
+        effects.SunRays.Spread = 0.75      -- Sol menor
+    end
+
+    presets.DivineGoldenHour = function()
+        CreateEffects()
+        Lighting.ClockTime = 17.8
+        Lighting.Brightness = 2.95         -- Reduzido
+
+        effects.Bloom.Intensity = 1.65     -- Reduzido
+        effects.Bloom.Size = 24
+        effects.Bloom.Threshold = 0.75
+
+        effects.Color.Brightness = 0.11
+        effects.Color.Contrast = 0.20
+        effects.Color.Saturation = 1.08
+        effects.Color.TintColor = Color3.fromRGB(255, 190, 115)
+
+        effects.Atmosphere.Density = 0.29
+        effects.Atmosphere.Color = Color3.fromRGB(255, 165, 75)
+        effects.Atmosphere.Decay = Color3.fromRGB(255, 135, 55)
+        effects.Atmosphere.Haze = 1.0
+        effects.Atmosphere.Glare = 0.42    -- Reduzido
+
+        effects.SunRays.Intensity = 0.26   -- Reduzido
+        effects.SunRays.Spread = 0.8       -- Sol menor
+    end
+
+    presets.Photorealistic = function()
+        CreateEffects()
+        Lighting.ClockTime = 14
+        Lighting.Brightness = 2.65
+        Lighting.GlobalShadows = true
+
+        effects.Bloom.Intensity = 1.35
+        effects.Bloom.Size = 22
+        effects.Bloom.Threshold = 0.9
+
+        effects.Color.Brightness = 0.04
+        effects.Color.Contrast = 0.32
+        effects.Color.Saturation = 0.78
+        effects.Color.TintColor = Color3.fromRGB(245, 240, 235)
+
+        effects.Atmosphere.Density = 0.145
+        effects.Atmosphere.Offset = 0.1
+        effects.Atmosphere.Haze = 0.6
+        effects.Atmosphere.Glare = 0.25
+
+        effects.DOF.FocusDistance = 250
+        effects.DOF.InFocusRadius = 180
+        effects.DOF.NearIntensity = 0.015
+        effects.DOF.FarIntensity = 0.08
+    end
+
+    presets.CelestialBloom = function()
+        CreateEffects()
+        Lighting.ClockTime = 16.5
+        Lighting.Brightness = 3.1          -- Reduzido
+
+        effects.Bloom.Intensity = 1.95     -- Reduzido
+        effects.Bloom.Size = 29
+        effects.Bloom.Threshold = 0.68
+
+        effects.Color.Brightness = 0.13
+        effects.Color.Contrast = 0.16
+        effects.Color.Saturation = 1.32
+        effects.Color.TintColor = Color3.fromRGB(205, 230, 255)
+
+        effects.Atmosphere.Density = 0.24
+        effects.Atmosphere.Color = Color3.fromRGB(175, 205, 255)
+        effects.Atmosphere.Decay = Color3.fromRGB(135, 180, 255)
+        effects.Atmosphere.Glare = 0.48    -- Reduzido
+        effects.Atmosphere.Haze = 1.35
+
+        effects.SunRays.Intensity = 0.24   -- Reduzido
+        effects.SunRays.Spread = 0.72      -- Sol menor
+    end
+
+    -- ==================== TOGGLES ====================
+
+    local function ActivateShader(name)
+        if currentShader == name then return end
+        DestroyAll()
+        presets[name]()
+        currentShader = name
+    end
+
+    local toggles = {}
+
+    toggles.UltraRTX = box:AddToggle("UltraRTX", { 
+        Text = "Ultra RTX (Melhor Geral)", 
+        Default = false, 
+        Callback = function(v)
+            if v then ActivateShader("UltraRTX") Library:Notify("Ultra RTX Ativado 🔥", 4)
+            elseif currentShader == "UltraRTX" then DestroyAll() end
+        end})
+
+    toggles.Cinematic = box:AddToggle("Cinematic", { 
+        Text = "Cinematic Realistic", 
+        Default = false, 
+        Callback = function(v)
+            if v then ActivateShader("CinematicRealistic") Library:Notify("Cinematic Realistic Ativado", 4)
+            elseif currentShader == "CinematicRealistic" then DestroyAll() end
+        end})
+
+    toggles.Ethereal = box:AddToggle("Ethereal", { 
+        Text = "Ethereal Dream ✨", 
+        Default = false, 
+        Callback = function(v)
+            if v then ActivateShader("EtherealDream") Library:Notify("Ethereal Dream Ativado", 4)
+            elseif currentShader == "EtherealDream" then DestroyAll() end
+        end})
+
+    toggles.GoldenHour = box:AddToggle("GoldenHour", { 
+        Text = "Divine Golden Hour", 
+        Default = false, 
+        Callback = function(v)
+            if v then ActivateShader("DivineGoldenHour") Library:Notify("Divine Golden Hour Ativado", 4)
+            elseif currentShader == "DivineGoldenHour" then DestroyAll() end
+        end})
+
+    toggles.Photorealistic = box:AddToggle("Photorealistic", { 
+        Text = "Photorealistic", 
+        Default = false, 
+        Callback = function(v)
+            if v then ActivateShader("Photorealistic") Library:Notify("Photorealistic Ativado", 4)
+            elseif currentShader == "Photorealistic" then DestroyAll() end
+        end})
+
+    toggles.Celestial = box:AddToggle("Celestial", { 
+        Text = "Celestial Bloom", 
+        Default = false, 
+        Callback = function(v)
+            if v then ActivateShader("CelestialBloom") Library:Notify("Celestial Bloom Ativado", 4)
+            elseif currentShader == "CelestialBloom" then DestroyAll() end
+        end})
+
+    -- ==================== CONTROLES FINAIS ====================
+
+    box:AddSlider("Brightness", {
+        Text = "Global Brightness",
+        Default = 1,
+        Min = 0,
+        Max = 5,
+        Rounding = 1,
+        Callback = function(v) Lighting.Brightness = v end
     })
 
-    box:AddToggle("NoEmbaçado", {
-        Text = "Remover Embaçado",
+    box:AddToggle("NoDOF", {
+        Text = "Remover Embaçado (DOF)",
         Default = true,
         Callback = function(v)
-            if dof and dof.Parent then
-                dof.NearIntensity = v and 0 or 0.35
-                dof.FarIntensity = v and 0 or 0.55
+            if effects.DOF then
+                effects.DOF.NearIntensity = v and 0 or 0.35
+                effects.DOF.FarIntensity = v and 0 or 0.55
             end
         end
     })
+
+    box:AddButton("Reset All Shaders", function()
+        DestroyAll()
+        for _, toggle in pairs(toggles) do
+            toggle:SetValue(false)
+        end
+        Library:Notify("Todos os shaders resetados", 3)
+    end)
 end
+
 box:AddToggle("AutoReset", {
     Text = "Auto Reset",
     Default = false,
