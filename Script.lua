@@ -962,7 +962,7 @@ box:AddToggle("AutoGucciBlob", {
                         end
                     end)
                     spawn(function()
-                        task.wait(0.2)
+                        task.wait(0.1)
                         local mess = pal.ViewItemButton.NewMessage:Clone()
                         mess.Name = "Gucci1"
                         mess.TextColor3 = Color3.fromRGB(255, 255, 255)
@@ -1846,6 +1846,38 @@ box:AddToggle("ThirdPerson", {
         end
     end
 })
+local UserInputService = game:GetService("UserInputService")
+local RunService = game:GetService("RunService")
+local Players = game:GetService("Players")
+
+local plr = Players.LocalPlayer
+local Camera = workspace.CurrentCamera
+
+local ShiftLockEnabled = false
+local ShiftLockKey = Enum.KeyCode.LeftShift -- tecla padrão
+
+local UIS = game:GetService("UserInputService")
+local RunService = game:GetService("RunService")
+
+local ShiftLock = false
+
+box:AddToggle("ShiftLock", {
+    Text = "Shift Lock (recomended) ",
+    Default = false,
+    Callback = function(v)
+        ShiftLock = v
+
+        if not v then
+            UIS.MouseBehavior = Enum.MouseBehavior.Default
+        end
+    end
+})
+
+RunService.RenderStepped:Connect(function()
+    if ShiftLock then
+        UIS.MouseBehavior = Enum.MouseBehavior.LockCenter
+    end
+end)
 box:AddToggle("JerkOff", {
     Text = "Jerk Off",
     Default = false,
