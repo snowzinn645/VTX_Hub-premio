@@ -255,9 +255,9 @@ box:AddToggle("AntiKickEsp", {
                             local high = Instance.new("Highlight", v)
                             high.Adornee = v
                             if v.StickyPart.StickyWeld.Part1 then
-                                high.FillColor = Color3.fromRGB(192, 173, 0)
+                                high.FillColor = Color3.fromRGB(192, 0, 0)
                             else
-                                high.FillColor = Color3.fromRGB(0, 194, 0)
+                                high.FillColor = Color3.fromRGB(182, 0, 0)
                             end
                             v.StickyPart.StickyWeld:GetPropertyChangedSignal("Part1"):Connect(function()
                                 if v.StickyPart.StickyWeld.Part1 then
@@ -274,15 +274,15 @@ box:AddToggle("AntiKickEsp", {
                             local high = Instance.new("Highlight", v)
                             high.Adornee = v
                             if v.StickyPart.StickyWeld.Part1 then
-                                high.FillColor = Color3.fromRGB(192, 173, 0)
+                                high.FillColor = Color3.fromRGB(255, 0, 0)
                             else
-                                high.FillColor = Color3.fromRGB(0, 194, 0)
+                                high.FillColor = Color3.fromRGB(255, 0, 0)
                             end
                             v.StickyPart.StickyWeld:GetPropertyChangedSignal("Part1"):Connect(function()
                                 if v.StickyPart.StickyWeld.Part1 then
-                                    high.FillColor = Color3.fromRGB(192, 173, 0)
+                                    high.FillColor = Color3.fromRGB(255, 0, 0)
                                 else
-                                    high.FillColor = Color3.fromRGB(0, 194, 0)
+                                    high.FillColor = Color3.fromRGB(255, 0, 0)
                                 end
                             end)
                         end
