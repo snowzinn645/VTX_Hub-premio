@@ -2687,24 +2687,144 @@ box:AddToggle("AntiDetect", {
     end
 })
 
-box:AddToggle("PacketLag", {
-    Text = "Packets",
+do
+local box = Tabs.Main:AddRightGroupbox("Lags")
+
+local lps = 100
+local Packets = 1800000
+local PacketsEnabled = false
+local AutoStopEnabled = true
+local MaxPing = 1000
+local AntiDetect = false
+
+-- Função melhorada para pegar o ping
+local function GetPing()
+    local success, ping = pcall(function()
+        local stats = game:GetService("Stats")
+        local network = stats:FindFirstChild("Network")
+        if network then
+            local serverStats = network:FindFirstChild("ServerStatsItem")
+            if serverStats then
+                local dataPing = serverStats:FindFirstChild("Data Ping")
+                if dataPing then
+                    return dataPing:GetValue()
+                end
+            end
+        end
+        return stats.PerformanceStats.Ping and stats.PerformanceStats.Ping:GetValue() or 0
+    end)
+    return success and ping or 0
+end
+
+box:AddSlider("LPS", {
+    Text = "Lines Per Second",
+    Default = 100,
+    Min = 1,
+    Max = 10000,
+    Rounding = 0,
+    Callback = function(v)
+        lps = v
+    end
+})
+
+box:AddToggle("LineLag", {
+    Text = "Line Lag",
     Default = false,
     Callback = function(v)
-        PacketsEnabled = v
+        linelag = v
         if v then
             task.spawn(function()
-                while PacketsEnabled and task.wait(0.05) do
-                    if AntiDetect then
-                        game:GetService("ReplicatedStorage").GrabEvents.CreateGrabLine:FireServer(string.rep("VTX_Hub is crazyyyyyyyy", Packets))
-                    else
-                        game:GetService("ReplicatedStorage").GrabEvents.ExtendGrabLine:FireServer(string.rep("VTX_Hub is crazyyyyyyyy", Packets))
+                while linelag do
+                    for i=1, lps do
+                        CreateLine:FireServer(workspace.SpawnLocation, CFrame.new(0, 9e9, 0))
                     end
+                    task.wait(1)
                 end
             end)
         end
     end
 })
+
+box:AddSlider("Packets", {
+    Text = "Packet Strength",
+    Default = 1800000,
+    Min = 3000,
+    Max = 800000,
+    Rounding = 0,
+    Callback = function(v)
+        Packets = v
+    end
+})
+
+box:AddToggle("AntiDetect", {
+    Text = "Anti Detect (Packets)",
+    Default = false,
+    Callback = function(v)
+        AntiDetect = v
+    end
+})
+
+box:AddToggle("PacketLag", {
+    Text = "Packet Lag",
+    Default = false,
+    Callback = function(v)
+        PacketsEnabled = v
+        
+        if v then
+            Library:Notify("Packet Lag Ativado", 3)
+            task.spawn(function()
+                while PacketsEnabled do
+                    -- Auto Stop
+                    if AutoStopEnabled then
+                        local currentPing = GetPing()
+                        if currentPing >= MaxPing then
+                            PacketsEnabled = false
+                            Library:Notify("🚫 Packet Lag DESATIVADO automaticamente\nPing: " .. math.floor(currentPing), 5)
+                            break
+                        end
+                    end
+
+                    pcall(function()
+                        if AntiDetect then
+                            game:GetService("ReplicatedStorage").GrabEvents.CreateGrabLine:FireServer(
+                                string.rep("VTX_Hub is crazyyyyyyyy", Packets)
+                            )
+                        else
+                            game:GetService("ReplicatedStorage").GrabEvents.ExtendGrabLine:FireServer(
+                                string.rep("VTX_Hub is crazyyyyyyyy", Packets)
+                            )
+                        end
+                    end)
+                    
+                    task.wait(0.05)
+                end
+            end)
+        else
+            Library:Notify("Packet Lag Desativado", 2)
+        end
+    end
+})
+
+box:AddToggle("AutoStop", {
+    Text = "Stop on High Ping",
+    Default = true,
+    Callback = function(v)
+        AutoStopEnabled = v
+    end
+})
+
+box:AddSlider("MaxPingSlider", {
+    Text = "Max Ping (Auto Stop)",
+    Default = 1000,
+    Min = 200,
+    Max = 10000,
+    Increment = 50,
+    Callback = function(v)
+        MaxPing = v
+    end
+})
+
+end
 
 end
 
