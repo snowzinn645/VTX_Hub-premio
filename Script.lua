@@ -2481,6 +2481,225 @@ box:AddToggle("ApplyMethodGrab", {
         end
     end
 })
+-- ==================== REMOVE ANTI INPUT LAG (Instantâneo por Alvo) ====================
+do
+    local box = Tabs.Defence:AddRightGroupbox("Anti Input Lag Target")
+
+    local AllowedItems = {
+        FoodHamburger = true, FoodCoconut = true, FoodPizzaCheese = true,
+        FoodPizzaPepperoni = true, FoodHotdog = true, FoodMushroomPoison = true,
+        FoodBread = true, FoodDippyEgg = true, FoodMayonnaise = true,
+        FoodFrenchFries = true, FoodMeatStick = true, FoodDonut = true,
+        FoodCakePink = true, FoodBanana = true,
+        InstrumentGuitarBanjo = true, InstrumentGuitarViolin = true,
+        InstrumentGuitarUkulele = true, InstrumentWoodwindSaxophone = true,
+        InstrumentWoodwindOcarina = true, InstrumentBrassVuvuzelaQwizik = true,
+        InstrumentBrassTrumpet = true, InstrumentDrumBongos = true,
+        InstrumentDrumSnare = true, InstrumentPianoMelodica = true,
+        InstrumentVoiceMicrophone = true,
+        CupMugWhite = true, CupMugBrown = true,
+        PoopPile = true, PoopPileSparkle = true,
+    }
+
+    local SelectedAntiLagTarget = box:AddDropdown("AntiLagTarget", {
+        Text = "Alvo Anti Input Lag",
+        Values = {"None"},
+        Default = "None",
+        Multi = false,
+    })
+
+    box:AddToggle("RemoveAntiInputLagTarget", {
+        Text = "Remove Anti Input Lag (Instant)",
+        Default = false,
+        Callback = function(state)
+            if not state then return end
+
+            task.spawn(function()
+                local targetName = SelectedAntiLagTarget.Value
+                if targetName == "None" then
+                    Library:Notify("Selecione um jogador!", 4)
+                    Toggles.RemoveAntiInputLagTarget:SetValue(false)
+                    return
+                end
+
+                local target = Players:FindFirstChild(getname(targetName))
+                if not target then
+                    Library:Notify("Alvo não encontrado!", 4)
+                    Toggles.RemoveAntiInputLagTarget:SetValue(false)
+                    return
+                end
+
+                Library:Notify("✅ Anti Input Lag Instant ativado em: " .. target.DisplayName, 5)
+
+                local connections = {}
+
+                local function ProcessItem(item)
+                    if not item or not AllowedItems[item.Name] or not item:FindFirstChild("HoldPart") then return end
+                    
+                    local holdPart = item.HoldPart
+                    pcall(function()
+                        holdPart.HoldItemRemoteFunction:InvokeServer(item, plr.Character)
+                    end)
+                    task.wait(0.025)
+                    pcall(function()
+                        holdPart.DropItemRemoteFunction:InvokeServer(item, 
+                            CFrame.new(0, -3000, 0), Vector3.zero)
+                    end)
+                end
+
+                -- Monitora itens já existentes + novos spawns
+                local function StartMonitoring()
+                    local folderName = target.Name .. "SpawnedInToys"
+                    local folder = workspace:FindFirstChild(folderName)
+
+                    if folder then
+                        -- Processa itens atuais
+                        for _, item in ipairs(folder:GetChildren()) do
+                            ProcessItem(item)
+                        end
+
+                        -- Detecta novos itens instantaneamente
+                        connections[#connections+1] = folder.ChildAdded:Connect(function(item)
+                            task.wait(0.1) -- pequeno delay para o item carregar
+                            ProcessItem(item)
+                        end)
+                    end
+                end
+
+                StartMonitoring()
+
+                -- Atualiza monitor quando o target respawna ou muda de personagem
+                connections[#connections+1] = target.CharacterAdded:Connect(function()
+                    task.wait(1)
+                    StartMonitoring()
+                end)
+
+                -- Loop de segurança (caso algum item escape)
+                while Toggles.RemoveAntiInputLagTarget.Value do
+                    StartMonitoring()
+                    task.wait(2)
+                end
+
+                -- Cleanup
+                for _, conn in ipairs(connections) do
+                    pcall(function() conn:Disconnect() end)
+                end
+            end)
+        end
+    })
+
+    -- Atualiza lista de jogadores
+    local function UpdateTargets()
+        local list = {"None"}
+        for _, pl in Players:GetPlayers() do
+            if pl ~= plr then
+                table.insert(list, pl.DisplayName .. " (" .. pl.Name .. ")")
+            end
+        end
+        SelectedAntiLagTarget:SetValues(list)
+    end
+
+    Players.PlayerAdded:Connect(UpdateTargets)
+    Players.PlayerRemoving:Connect(UpdateTargets)
+    UpdateTargets()
+end
+-- ==================== LOOP KICK BLOB (Grab + Blobman) ====================
+do
+    local box = Tabs.Target:AddRightGroupbox("Loop Kick")  -- ou adicione em um groupbox existente
+
+    box:AddToggle("LoopKickBlob", {
+        Text = "Loop Kick (Grab + Blob)",
+        Default = false,
+        Callback = function(on)
+            if not on then return end
+
+            local targetName = GrabTarget.Value or BlobmanTarget.Value
+            if not targetName or targetName == "None" then
+                Library:Notify("Selecione um alvo primeiro!", 3)
+                Toggles.LoopKickBlob:SetValue(false)
+                return
+            end
+
+            local target = Players:FindFirstChild(getname(targetName))
+            if not target then
+                Toggles.LoopKickBlob:SetValue(false)
+                return
+            end
+
+            local char = plr.Character
+            local hum = char and char:FindFirstChild("Humanoid")
+            local seat = hum and hum.SeatPart
+
+            if not seat or seat.Parent.Name ~= "CreatureBlobman" then
+                Library:Notify("Sente no Blobman primeiro!", 3)
+                Toggles.LoopKickBlob:SetValue(false)
+                return
+            end
+
+            task.spawn(function()
+                local blob = seat.Parent
+                local blobRoot = blob:FindFirstChild("HumanoidRootPart")
+                local scriptObj = blob:FindFirstChild("BlobmanSeatAndOwnerScript")
+                local CG = scriptObj and scriptObj:FindFirstChild("CreatureGrab")
+                local CD = scriptObj and scriptObj:FindFirstChild("CreatureDrop")
+                local R_Det = blob:FindFirstChild("RightDetector")
+                local R_Weld = R_Det and (R_Det:FindFirstChild("RightWeld") or R_Det:FindFirstChildWhichIsA("Weld"))
+                local SavedPos = blobRoot.CFrame
+
+                local tChar = target.Character
+                local tRoot = tChar and tChar:FindFirstChild("HumanoidRootPart")
+                local tHum = tChar and tChar:FindFirstChild("Humanoid")
+
+                if tRoot and blobRoot then
+                    -- Bring inicial
+                    for i = 1, 15 do
+                        if not Toggles.LoopKickBlob.Value then break end
+                        blobRoot.CFrame = tRoot.CFrame
+                        pcall(function()
+                            if CG and R_Det then 
+                                CG:FireServer(R_Det, tRoot, R_Weld) 
+                            end
+                            DestroyLine:FireServer(tRoot)
+                            SetNetOwner:FireServer(tRoot, tRoot.CFrame)
+                        end)
+                        task.wait()
+                    end
+                    blobRoot.CFrame = SavedPos
+                end
+
+                local packetTimer = 0
+                while Toggles.LoopKickBlob.Value do
+                    tChar = target.Character
+                    tRoot = tChar and tChar:FindFirstChild("HumanoidRootPart")
+                    tHum = tChar and tChar:FindFirstChild("Humanoid")
+
+                    if tRoot and tHum and tHum.Health > 0 and blobRoot then
+                        blobRoot.CFrame = SavedPos
+                        tRoot.CFrame = SavedPos * CFrame.new(0, 23, 0)
+
+                        if tick() - packetTimer > 0.012 then
+                            packetTimer = tick()
+                            pcall(function()
+                                tHum.PlatformStand = true
+                                DestroyLine:FireServer(tRoot)
+                                SetNetOwner:FireServer(tRoot, tRoot.CFrame)
+                                if R_Det and CD then CD:FireServer(R_Det.RightWeld or R_Det:FindFirstChildWhichIsA("Weld")) end
+                                if R_Det and CG then CG:FireServer(R_Det, tRoot, R_Weld) end
+                            end)
+                        end
+                    end
+                    RunService.Heartbeat:Wait()
+                end
+
+                -- Cleanup
+                if blobRoot then 
+                    blobRoot.CFrame = SavedPos 
+                    blobRoot.Velocity = Vector3.zero 
+                end
+            end)
+        end
+    })
+end
 
 box:AddButton("Try to Remove Gucci", function()
     local pos = HRP.CFrame
@@ -2519,6 +2738,8 @@ box:AddButton("Void TP", function()
     hrp.CFrame = CFrame.new(pos)
 
 end)
+
+end
 
 end
 
